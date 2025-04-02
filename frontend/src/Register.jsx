@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import { TextField, Button, Container, Typography, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
@@ -15,7 +15,11 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/register", { username, password }, { headers: { "Content-Type": "application/json" } });
+      const response = await axios.post(
+        "http://localhost:5000/register",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
       alert(response.data.message);
       navigate("/login");
@@ -25,13 +29,44 @@ const Register = () => {
   };
 
   return (
-    <Container>
-      <Typography>Register</Typography>
-      <TextField label="Username" fullWidth margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
-      <TextField label="Password" type="password" fullWidth margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <Button variant="contained" color="primary" fullWidth onClick={handleRegister}>
+    <Container maxWidth="sm">
+      <Typography variant="h4" gutterBottom>
         Register
-      </Button>
+      </Typography>
+      
+      <Stack spacing={2}>
+        <TextField
+          label="Username"
+          fullWidth
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleRegister}
+        >
+          Create Account
+        </Button>
+        
+        <Button
+          variant="text"
+          color="secondary"
+          fullWidth
+          onClick={() => navigate("/login")}
+        >
+          Already have an account? Login
+        </Button>
+      </Stack>
     </Container>
   );
 };

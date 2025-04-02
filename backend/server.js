@@ -14,7 +14,7 @@ const db = mysql2.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "user_db",
+  database: "lee_db",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -79,6 +79,45 @@ app.post("/login", (req, res) => {
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.json({ message: "Login successful", token, username: user.username });
+  });
+});
+
+app.get("/api/items", (req, res) => {
+  const sql = "SELECT * FROM items";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    res.json(results);
+  });
+});
+
+// POST new item
+app.post("/api/items", (req, res) => {
+  const { name } = req.body;
+  const sql = "INSERT INTO items (name) VALUES (?)";
+  db.query(sql, [name], (err, result) => {
+    if (err) return res.status(500).json({ message: "Insert failed" });
+    res.status(201).json({ id: result.insertId, name });
+  });
+});
+
+// PUT update item
+app.put("/api/items/:id", (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const sql = "UPDATE items SET name = ? WHERE id = ?";
+  db.query(sql, [name, id], (err) => {
+    if (err) return res.status(500).json({ message: "Update failed" });
+    res.json({ id: parseInt(id), name });
+  });
+});
+
+// DELETE item
+app.delete("/api/items/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "DELETE FROM items WHERE id = ?";
+  db.query(sql, [id], (err) => {
+    if (err) return res.status(500).json({ message: "Delete failed" });
+    res.json({ message: "Item deleted" });
   });
 });
 
