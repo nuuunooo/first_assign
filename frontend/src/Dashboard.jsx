@@ -7,14 +7,19 @@ import EditIcon from "@mui/icons-material/Edit";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
+  const [userId, setUserId] = useState(null);
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState("");
   const [editItemId, setEditItemId] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("username");
+    const storedUserId = localStorage.getItem("userId");
     if (storedUser) {
       setUser(storedUser);
+      if (storedUserId) {
+        setUserId(parseInt(storedUserId));
+      }
       fetchItems();
     } else {
       navigate("/login");
@@ -58,6 +63,13 @@ const Dashboard = () => {
       alert("Item name cannot be empty");
       return;
     }
+    
+    if (!userId) {
+      alert("User ID not found. Please log in again.");
+      navigate("/login");
+      return;
+    }
+    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -69,7 +81,7 @@ const Dashboard = () => {
       const response = await fetch("http://localhost:5000/api/items", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ name: newItem }),
+        body: JSON.stringify({ name: newItem, user_id: userId }),
       });
 
       if (!response.ok) {

@@ -78,7 +78,7 @@ app.post("/login", (req, res) => {
 
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({ message: "Login successful", token, username: user.username });
+    res.json({ message: "Login successful", token, username: user.username, userId: user.id });
   });
 });
 
@@ -92,11 +92,16 @@ app.get("/api/items", (req, res) => {
 
 // POST new item
 app.post("/api/items", (req, res) => {
-  const { name } = req.body;
-  const sql = "INSERT INTO items (name) VALUES (?)";
-  db.query(sql, [name], (err, result) => {
+  const { name, user_id } = req.body;
+  
+  if (!name || !user_id) {
+    return res.status(400).json({ message: "Name and user_id are required" });
+  }
+  
+  const sql = "INSERT INTO items (name, user_id) VALUES (?, ?)";
+  db.query(sql, [name, user_id], (err, result) => {
     if (err) return res.status(500).json({ message: "Insert failed" });
-    res.status(201).json({ id: result.insertId, name });
+    res.status(201).json({ id: result.insertId, name, user_id });
   });
 });
 

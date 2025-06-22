@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import { TextField, Button, Container, Typography, Stack, Paper, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -20,6 +21,7 @@ const Login = () => {
       console.log("Token received from server:", token); // Log the token for debugging
       localStorage.setItem("token", token);
       localStorage.setItem("username", response.data.username);
+      localStorage.setItem("userId", response.data.userId || response.data.id);
       alert("Login successful!");
       navigate("/dashboard");
     } catch (error) {
@@ -29,14 +31,83 @@ const Login = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Typography variant="h4">Login</Typography>
-      <TextField label="Username" fullWidth margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
-      <TextField label="Password" type="password" fullWidth margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
-        Login
-      </Button>
-    </Container>
+    <Box
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        px: 2,
+        boxSizing: 'border-box'
+      }}
+    >
+      <Paper 
+        elevation={3}
+        sx={{
+          p: 4,
+          width: '100%',
+          maxWidth: 400,
+          borderRadius: 2,
+          backgroundColor: 'background.paper'
+        }}
+      >
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            Welcome Back
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Please sign in to your account
+          </Typography>
+        </Box>
+
+        <Stack spacing={3}>
+          <TextField
+            label="Username"
+            fullWidth
+            variant="outlined"
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          
+          <Button 
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth 
+            onClick={handleLogin}
+            sx={{ 
+              py: 1.5,
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            Sign In
+          </Button>
+          
+          <Button
+            variant="text"
+            color="secondary"
+            fullWidth
+            onClick={() => navigate("/register")}
+            sx={{ mt: 1 }}
+          >
+            Don't have an account? Register
+          </Button>
+        </Stack>
+      </Paper>
+    </Box>
   );
 };
 
